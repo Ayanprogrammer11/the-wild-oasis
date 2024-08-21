@@ -17,7 +17,7 @@ const Label = styled.label`
   font-weight: 500;
 `;
 
-function CreateCabinForm({ cabinForEdit = {} }) {
+function CreateCabinForm({ cabinForEdit = {}, onCloseModal }) {
   // For Editing Cabin
   const { id: editId, ...editValues } = cabinForEdit;
   const isEditSession = Boolean(editId);
@@ -40,15 +40,35 @@ function CreateCabinForm({ cabinForEdit = {} }) {
         : cabinForEdit.image;
 
     if (isEditSession) {
-      editCabin({ newCabin: { ...data, image }, id: editId });
-    } else createCabin({ ...data, image });
+      editCabin(
+        { newCabin: { ...data, image }, id: editId },
+        {
+          onSuccess: () => {
+            reset(getValues());
+            onCloseModal?.();
+          },
+        }
+      );
+    } else
+      createCabin(
+        { ...data, image },
+        {
+          onSuccess: () => {
+            reset();
+            onCloseModal?.();
+          },
+        }
+      );
   }
   function onError(errors) {
     console.log(errors);
   }
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit, onError)}>
+    <Form
+      onSubmit={handleSubmit(onSubmit, onError)}
+      type={onCloseModal ? "modal" : "regular"}
+    >
       <FormRow
         label="Cabin name"
         error={errors?.name?.message}
@@ -133,7 +153,11 @@ function CreateCabinForm({ cabinForEdit = {} }) {
       </FormRow>
 
       <FormRow>
-        <Button variation="secondary" type="reset">
+        <Button
+          variation="secondary"
+          type="reset"
+          onClick={() => onCloseModal?.()}
+        >
           Cancel
         </Button>
         <Button disabled={isWorking}>
