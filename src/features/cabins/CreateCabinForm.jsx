@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import FormRow from "../../ui/FormRow";
 import { useCreateCabin } from "./useCreateCabin";
 import { useEditCabin } from "./useEditCabin";
+import { useCallback, useEffect } from "react";
 
 const Label = styled.label`
   font-weight: 500;
@@ -107,7 +108,7 @@ function CreateCabinForm({ cabinForEdit = {}, onCloseModal }) {
       </FormRow>
 
       <FormRow
-        label="Discount"
+        label={`Discount`}
         error={errors?.discount?.message}
         disabled={isWorking}
       >
@@ -118,9 +119,19 @@ function CreateCabinForm({ cabinForEdit = {}, onCloseModal }) {
           {...register("discount", {
             required: "This field is required",
             min: { value: 0, message: "Discount cant be negative!" },
-            validate: (value, fieldValues) =>
-              +value <= +fieldValues.regularPrice ||
-              "Discount cant be more than Regular Price!",
+            validate: (value, fieldValues) => {
+              if (!fieldValues.regularPrice) return true;
+              if (+value > +fieldValues.regularPrice)
+                return `Discount cant be more than the actual price!`;
+              if (+value >= +fieldValues.regularPrice)
+                return `Discount cant be equal to the actual price!`;
+
+              if (+value > Math.round((85 / 100) * +fieldValues.regularPrice)) {
+                return "Maximum Discount limit is 85%";
+              }
+
+              return true;
+            },
           })}
         />
       </FormRow>

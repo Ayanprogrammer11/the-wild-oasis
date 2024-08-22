@@ -1,4 +1,9 @@
-import styled, { css } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
+
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
 
 const sizes = {
   small: css`
@@ -52,9 +57,30 @@ const Button = styled.button`
   border: none;
   border-radius: var(--border-radius-sm);
   box-shadow: var(--shadow-sm);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
 
   ${(props) => sizes[props.size]}
   ${(props) => variations[props.variation]}
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  &:disabled::before {
+    content: "";
+    width: 1.6rem;
+    height: 1.6rem;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid #fff;
+    border-radius: 50%;
+    animation: ${spin} 1s linear infinite;
+    margin-right: 0.8rem;
+  }
 `;
 
 Button.defaultProps = {

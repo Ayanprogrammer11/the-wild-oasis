@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Form from "../../ui/Form";
 import FormRow from "../../ui/FormRow";
 import Input from "../../ui/Input";
@@ -19,8 +20,16 @@ function UpdateSettingsForm() {
 
   const { updateSetting, isUpdating } = useUpdateSetting();
 
+  const [lastValue, setLastValue] = useState(null);
+
   function handleUpdateSetting(e) {
+    console.log(e);
+    if (lastValue === e.target.value) return;
     updateSetting({ [e.target.id]: e.target.value });
+  }
+
+  function handleFocus(e) {
+    setLastValue(e.target.value);
   }
 
   if (isLoading) return <Spinner />;
@@ -33,6 +42,7 @@ function UpdateSettingsForm() {
           defaultValue={minBookingLength}
           onBlur={handleUpdateSetting}
           disabled={isUpdating}
+          onFocus={handleFocus}
         />
       </FormRow>
       <FormRow label="Maximum nights/booking">
@@ -42,6 +52,7 @@ function UpdateSettingsForm() {
           defaultValue={maxBookingLength}
           onBlur={handleUpdateSetting}
           disabled={isUpdating}
+          onFocus={handleFocus}
         />
       </FormRow>
       <FormRow label="Maximum guests/booking">
@@ -51,6 +62,7 @@ function UpdateSettingsForm() {
           defaultValue={maxGuestsPerBooking}
           onBlur={handleUpdateSetting}
           disabled={isUpdating}
+          onFocus={handleFocus}
         />
       </FormRow>
       <FormRow label="Breakfast price">
@@ -60,6 +72,7 @@ function UpdateSettingsForm() {
           defaultValue={breakfastPrice}
           onBlur={handleUpdateSetting}
           disabled={isUpdating}
+          onFocus={handleFocus}
         />
       </FormRow>
     </Form>
